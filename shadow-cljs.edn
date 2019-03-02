@@ -1,20 +1,14 @@
 ;; shadow-cljs configuration
 {:source-paths
-<<<<<<< HEAD
- ["src/dev"
-  "src/main"
+ [
   "src/test"
   "src"]
 
  :dependencies
- [[cider/cider-nrepl "0.17.0"]]
-=======
- ["src"
-  "src/test"]
-
- :dependencies
- [[rm-hull/monet "0.3.0"]]
->>>>>>> 5096bc3c585b239fd26084793bf623b5d90b213c
+ [
+  [cider/cider-nrepl "0.17.0"]
+  [rm-hull/monet "0.3.0"]
+  ]
 
  :builds
  {:app {:target :browser
