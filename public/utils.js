@@ -2,7 +2,7 @@ function drawPolygon(ctx,centerX,centerY,sideCount,size,strokeWidth,strokeColor,
     ctx.translate(centerX,centerY);
     ctx.rotate(radians);
     ctx.beginPath();
-    ctx.moveTo (size * Math.cos(0), size * Math.sin(0));          
+    ctx.moveTo (size * Math.cos(0), size * Math.sin(0));
     for (var i = 1; i <= sideCount;i += 1) {
         ctx.lineTo (size * Math.cos(i * 2 * Math.PI / sideCount), size * Math.sin(i * 2 * Math.PI / sideCount));
     }

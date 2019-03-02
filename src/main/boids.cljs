@@ -50,35 +50,26 @@
                                   [(util/add sum (:velocity b)) (inc count)]
                                   [sum count])))
                             [[0 0] 0]
-                            boids)
-        ]
+                            boids)]
     (if (> count 0)
       (-> sum
           (util/div count)
           util/normalize
           (util/mult MAX_SPEED)
           (util/sub (:velocity boid))
-          (util/limit MAX_FORCE)
-          )
-      [0 0])
-    )
-)
+          (util/limit MAX_FORCE))
+      [0 0])))
 
 (defn seek [target boid]
   (let [
         desired (-> target
                     (util/sub (:position boid))
                     util/normalize
-                    (util/mult MAX_SPEED)
-                    )
+                    (util/mult MAX_SPEED))
         steer (-> desired
                   (util/sub (:velocity boid))
-                  (util/limit MAX_FORCE)
-                  )
-        ]
-    steer
-    )
-  )
+                  (util/limit MAX_FORCE))]
+    steer))
 
 (defn cohesion [boid boids]
   (let [neighbordist 50
@@ -94,8 +85,7 @@
     (if (> count 0)
       (-> sum
           (util/div count)
-          (seek boid)
-          )
+          (seek boid))
       [0 0])))
 
 (defn apply-force [boid force]
@@ -107,13 +97,11 @@
         cohc (cohesion boid boids)
         sep' (util/mult sep 1.5)
         alg' (util/mult alg 1.0)
-        cohc' (util/mult cohc 1.0)
-        ]
+        cohc' (util/mult cohc 1.0)]
     (-> boid
         (apply-force sep')
         (apply-force alg')
-        (apply-force cohc')
-        )))
+        (apply-force cohc'))))
 
 (defn update-boid [boid]
   (->
@@ -130,8 +118,7 @@
       (< x (- BOID_SIZE)) (assoc-in [:position 0] (+ max-width BOID_SIZE))
       (< y (- BOID_SIZE)) (assoc-in [:position 1] (+ max-height BOID_SIZE))
       (> x (+ max-width BOID_SIZE)) (assoc-in [:position 0] (- BOID_SIZE))
-      (> y (+ max-height BOID_SIZE)) (assoc-in [:position 1] (- BOID_SIZE))
-      )))
+      (> y (+ max-height BOID_SIZE)) (assoc-in [:position 1] (- BOID_SIZE)))))
 
 (defn run [boid boids max-height max-width]
   (-> boid
