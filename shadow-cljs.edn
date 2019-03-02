@@ -2,10 +2,11 @@
 {:source-paths
  ["src/dev"
   "src/main"
-  "src/test"]
+  "src/test"
+  "src"]
 
  :dependencies
- []
+ [[cider/cider-nrepl "0.17.0"]]
 
  :builds
  {:app {:target :browser
