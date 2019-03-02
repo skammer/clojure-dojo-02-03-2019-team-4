@@ -129,8 +129,8 @@
     (cond-> boid
       (< x (- BOID_SIZE)) (assoc-in [:position 0] (+ max-width BOID_SIZE))
       (< y (- BOID_SIZE)) (assoc-in [:position 1] (+ max-height BOID_SIZE))
-      (> x (+ max-width BOID_SIZE)) (update-in [:position 0] - BOID_SIZE)
-      (< y (+ max-height BOID_SIZE)) (update-in [:position 1] - BOID_SIZE)
+      (> x (+ max-width BOID_SIZE)) (assoc-in [:position 0] (- BOID_SIZE))
+      (> y (+ max-height BOID_SIZE)) (assoc-in [:position 1] (- BOID_SIZE))
       )))
 
 (defn run [boid boids max-height max-width]
