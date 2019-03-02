@@ -90,16 +90,13 @@
                                   [(util/add sum (:position b)) (inc count)]
                                   [sum count])))
                             [[0 0] 0]
-                            boids)
-        ]
+                            boids)]
     (if (> count 0)
       (-> sum
           (util/div count)
           (seek boid)
           )
-      [0 0])
-    )
-  )
+      [0 0])))
 
 (defn apply-force [boid force]
   (update boid :acceleration util/add force))
@@ -119,17 +116,25 @@
         )))
 
 (defn update-boid [boid]
-  ; (-> (:velocity boid)
-  ;     (util/add (:acceleration boid))
-  ;     (util/limit MAX_SPEED))
- (update boid :velocity util/add force)
- (update boid :acceleration util/add force)
- (update boid :acceleration util/add force)
- (update boid :acceleration util/add force)
- )
+  (->
+   boid
+   (update :velocity util/add (:acceleration boid))
+   (update :velocity util/limit MAX_SPEED)
+   (update :position util/add (:velocity boid))
+   (update :acceleration util/mult 0)))
 
+(defn wrap [boid max-height max-width]
+  (let [{:keys [position]} boid
+        [x y] position]
+    (cond-> boid
+      (< x (- BOID_SIZE)) (assoc-in [:position 0] (+ max-width BOID_SIZE))
+      (< y (- BOID_SIZE)) (assoc-in [:position 1] (+ max-height BOID_SIZE))
+      (> x (+ max-width BOID_SIZE)) (update-in [:position 0] - BOID_SIZE)
+      (< y (+ max-height BOID_SIZE)) (update-in [:position 1] - BOID_SIZE)
+      )))
 
-(defn run [boid boids]
+(defn run [boid boids max-height max-width]
   (-> boid
       (flock boids)
-      update-boid))
+      update-boid
+      (wrap max-height max-width)))

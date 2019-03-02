@@ -5,7 +5,7 @@
 (defn ^:dev/after-load start []
   (let [boids [(boids/->boid 0 0)
                (boids/->boid 10 10)]]
-    (js/console.log (clj->js (boids/run (first boids) boids))))
+    (js/console.log (clj->js (boids/run (first boids) boids 200 200))))
   (js/console.log "start"))
 
 (defn ^:export init []
