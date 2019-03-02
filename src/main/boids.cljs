@@ -40,12 +40,94 @@
           (util/limit MAX_FORCE))
       steer')))
 
+(defn align [boid boids]
+  (let [neighbordist 50
+        [sum count] (reduce (fn [[sum count] b]
+                              (let [d (util/dist (:position boid)
+                                                 (:position b))]
+                                (if (and (> d 0)
+                                         (< d neighbordist))
+                                  [(util/add sum (:velocity b)) (inc count)]
+                                  [sum count])))
+                            [[0 0] 0]
+                            boids)
+        ]
+    (if (> count 0)
+      (-> sum
+          (util/div count)
+          util/normalize
+          (util/mult MAX_SPEED)
+          (util/sub (:velocity boid))
+          (util/limit MAX_FORCE)
+          )
+      [0 0])
+    )
+)
+
+(defn seek [target boid]
+  (let [
+        desired (-> target
+                    (util/sub (:position boid))
+                    util/normalize
+                    (util/mult MAX_SPEED)
+                    )
+        steer (-> desired
+                  (util/sub (:velocity boid))
+                  (util/limit MAX_FORCE)
+                  )
+        ]
+    steer
+    )
+  )
+
+(defn cohesion [boid boids]
+  (let [neighbordist 50
+        [sum count] (reduce (fn [[sum count] b]
+                              (let [d (util/dist (:position boid)
+                                                 (:position b))]
+                                (if (and (> d 0)
+                                         (< d neighbordist))
+                                  [(util/add sum (:position b)) (inc count)]
+                                  [sum count])))
+                            [[0 0] 0]
+                            boids)
+        ]
+    (if (> count 0)
+      (-> sum
+          (util/div count)
+          (seek boid)
+          )
+      [0 0])
+    )
+  )
+
+(defn apply-force [boid force]
+  (update boid :acceleration util/add force))
+
 (defn flock [boid boids]
-  (let [sep (separate boid boids)]
-    sep))
+  (let [sep (separate boid boids)
+        alg (align boid boids)
+        cohc (cohesion boid boids)
+        sep' (util/mult sep 1.5)
+        alg' (util/mult alg 1.0)
+        cohc' (util/mult cohc 1.0)
+        ]
+    (-> boid
+        (apply-force sep')
+        (apply-force alg')
+        (apply-force cohc')
+        )))
 
 (defn update-boid [boid]
-  boid)
+  ; (-> (:velocity boid)
+  ;     (util/add (:acceleration boid))
+  ;     (util/limit MAX_SPEED))
+ (update boid :velocity util/add force)
+ (update boid :acceleration util/add force)
+ (update boid :acceleration util/add force)
+ (update boid :acceleration util/add force)
+ )
+
 
 (defn run [boid boids]
   (-> boid
