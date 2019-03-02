@@ -41,3 +41,6 @@
   (if (> (mag-sq xy) (* max max))
     (-> xy normalize (mult max))
     xy))
+
+(defn heading [[x y]]
+  (- (Math/atan2 (- y) x)))

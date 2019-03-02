@@ -1,5 +1,6 @@
 (ns main.core
-  (:require [main.boids :as boids]))
+  (:require [main.boids :as boids]
+            [main.util :refer [heading]]))
 
 (defn initial-birds [] (repeatedly 50 #(boids/->boid 320 240)))
 (defonce birds (atom []))
@@ -7,9 +8,10 @@
 (def canvas (.getElementById js/document "boids"))
 (def ctx (.getContext canvas "2d"))
 
-(defn draw-dot [{:keys [position] :as boid}]
-  (let [[x y] position]
-    (.fillRect ctx x y 10 10)))
+(defn draw-dot [{:keys [position velocity] :as boid}]
+  (let [[x y] position
+        angle (heading velocity)]
+    (.drawPolygon js/window ctx x y 3 6 2 "#ffffff" "#000" angle)))
 
 (defn draw-dots [coll]
   (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
@@ -22,8 +24,6 @@
 
 ;; start is called by init and after code reloading finishes
 (defn ^:dev/after-load start []
-  (set! (.-onclick canvas) advance-boids)
-  (js/setInterval advance-boids 20)
   (js/console.log "start"))
 
 (defn ^:export init []
@@ -31,6 +31,8 @@
   ;; this is called in the index.html and must be exported
   ;; so it is available even in :advanced release builds
   (reset! birds (initial-birds))
+  (js/setInterval advance-boids 20)
+  (set! (.-onclick canvas) advance-boids)
   (add-watch birds :mutator
              (fn [_ ref old new]
                (draw-dots new)))
