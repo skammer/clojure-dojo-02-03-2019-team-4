@@ -119,13 +119,19 @@
         )))
 
 (defn update-boid [boid]
-  ; (-> (:velocity boid)
-  ;     (util/add (:acceleration boid))
-  ;     (util/limit MAX_SPEED))
- (update boid :velocity util/add force)
- (update boid :acceleration util/add force)
- (update boid :acceleration util/add force)
- (update boid :acceleration util/add force)
+  (-> boid
+    (update :velocity util/add (:acceleration boid))
+    (update :velocity util/limit MAX_SPEED
+    (update :position util/add (:velocity boid) ; FIXME use updated boid
+    (update :acceleration (fn [x] (util/mult x 0)))
+    )
+  (-> (:velocity boid)
+      (util/add (:acceleration boid))
+      (util/limit MAX_SPEED))
+ ; (update boid :velocity util/add force)
+ ; (update boid :acceleration util/add force)
+ ; (update boid :acceleration util/add force)
+ ; (update boid :acceleration util/add force)
  )
 
 
