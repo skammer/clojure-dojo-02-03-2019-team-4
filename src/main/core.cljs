@@ -8,19 +8,26 @@
 (def canvas (.getElementById js/document "boids"))
 (def ctx (.getContext canvas "2d"))
 
-(defn draw-dot [{:keys [position velocity] :as boid}]
+(defn draw-dot [{:keys [position velocity] :as boid} color]
   (let [[x y] position
         angle (heading velocity)]
-    (.drawPolygon js/window ctx x y 3 6 2 "#ffffff" "#000" angle)))
+    (.drawPolygon js/window ctx x y 3 6 2 color color angle)))
 
-(defn draw-dots [coll]
+(defn draw-dots [colls]
   (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
-  (doseq [bird coll]
-    (draw-dot bird)))
+  (let [num-generations  5
+        last-generations (->> (reverse colls)
+                              (take-nth 4)
+                              (take num-generations))]
+    (doseq [[idx coll] (map-indexed vector last-generations)]
+      (doseq [bird coll]
+        (draw-dot bird (str "rgba(0,0,0," (/ 1.0 (if (> idx 1)
+                                                   (* idx 5)
+                                                   idx)) ")"))))))
 
 (defn advance-boids []
-  (let [boids @birds]
-    (reset! birds (map #(boids/run % boids (.-height canvas) (.-width canvas)) boids))))
+  (let [boids (last @birds)]
+    (swap! birds conj (map #(boids/run % boids (.-height canvas) (.-width canvas)) boids))))
 
 ;; start is called by init and after code reloading finishes
 (defn ^:dev/after-load start []
@@ -30,7 +37,7 @@
   ;; init is called ONCE when the page loads
   ;; this is called in the index.html and must be exported
   ;; so it is available even in :advanced release builds
-  (reset! birds (initial-birds))
+  (reset! birds [(initial-birds)])
   (js/setInterval advance-boids 20)
   (set! (.-onclick canvas) advance-boids)
   (add-watch birds :mutator
