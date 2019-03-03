@@ -1,14 +1,11 @@
 ;; shadow-cljs configuration
 {:source-paths
- [
-  "src/test"
+ ["src/test"
   "src"]
 
  :dependencies
- [
-  [cider/cider-nrepl "0.17.0"]
-  [rm-hull/monet "0.3.0"]
-  ]
+ [[cider/cider-nrepl "0.17.0"]
+  [rm-hull/monet "0.3.0"]]
 
  :builds
  {:app {:target :browser
@@ -22,5 +19,4 @@
         ;; start a development http server on http://localhost:8020
         :devtools
         {:http-root "public"
-         :http-port 8020}
-        }}}
+         :http-port 8020}}}}
