@@ -32,7 +32,7 @@
   ;; so it is available even in :advanced release builds
   (reset! birds (initial-birds))
   (js/setInterval advance-boids 20)
-  (set! (.-onclick canvas) advance-boids)
+  (-> canvas (.addEventListener "click" advance-boids))
   (add-watch birds :mutator
              (fn [_ ref old new]
                (draw-dots new)))
